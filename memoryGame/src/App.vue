@@ -1,7 +1,7 @@
 <template>
   <h1>Harry Potter Memory</h1>
 
-  <transition-group tag="section" class="game-bord" name="shuffle-card">
+  <TransitionGroup tag="section" class="game-board" name="shuffle-card">
     <Card v-for="card in cardList" 
     :key="`card-${card.value}-${card.variant}`"
     :value="card.value"
@@ -9,12 +9,11 @@
     :visible="card.visible"
     :position="card.position"
     @select-card="flipCard"/>
-  </transition-group>
+  </TransitionGroup>
 
   <h2>{{ status }}</h2>
 
-  <p>Remaining Pairs: {{ remainingPairs }}</p>
-  <button @click="restartGame">Restart Game</button>
+  <button id="restartBtn" @click="restartGame">Restart Game</button>
 </template>
 
 
@@ -50,12 +49,21 @@ export default {
        return remainingCards / 2 
     })
 
-    const shuffleCards = () => {
-      cardList.value = _.shuffle(cardList.value)
+    // const shuffleCards = () => {
+    //   cardList.value = _.shuffle(cardList.value)
+    // }
+
+    function shuffleCards() {
+      cardList.value.sort(() => {
+      return 0.5 - Math.random();
+     });
+
+     return cardList.value;
     }
 
     const restartGame = () => {
-      cardList.value = _.shuffle(cardList.value)
+      // cardList.value = _.shuffle(cardList.value)
+      shuffleCards()
 
       cardList.value = cardList.value.map((card, index) => {
         return {
@@ -67,7 +75,7 @@ export default {
       })
     }
     
-    const cardItems = []
+    const cardItems = ['luna', 'hermione', 'fleur', 'neville', 'ron', 'severus', 'harry', 'twins']
 
     cardItems.forEach(item => {
       cardList.value.push({
@@ -86,19 +94,24 @@ export default {
         matched: false
       })
     })
+    
+    shuffleCards() 
 
-    cardList.value = cardList.value.map((card, item) => {
-      return {
-       ...card, 
-       position: index
-      }
-    })
+    cardList.value.forEach((card, index) => {
+     card.position = index;
+    });
+
+    // cardList.value = cardList.value.map((card, index) => {
+    //   return {
+    //    ...card, 
+    //    position: index
+    //   }
+    // })
 
     const flipCard = payload => {
       cardList.value[payload.position].visible = true
 
       if (userSelection.value[0]) {
-        
        if (userSelection.value[0].position === payload.position && userSelection.value[0].faceValue === payload.faceValue) {
         return 
        } else {
@@ -110,19 +123,19 @@ export default {
     }
 
     watch(userSelection, (currentValue) => {
-       if (currentValue.lenght === 2) {
+       if (currentValue.length === 2) {
         const cardOne = currentValue[0]
         const cardTwo = currentValue[1] 
 
         if (cardOne.faceValue === cardTwo.faceValue){
           
            cardList.value[cardOne.position].matched = true
-           cardList.value[cardTwo.position].visible = false 
+           cardList.value[cardTwo.position].matched = true 
         } else {
           setTimeout(() => {
             cardList.value[cardOne.position].visible = false
             cardList.value[cardTwo.position].visible = false 
-          }, 2000)
+          }, 1000)
         }
 
         userSelection.value.length = 0 
@@ -135,6 +148,7 @@ export default {
       flipCard, 
       userSelection, 
       status, 
+      shuffleCards, 
       restartGame, 
     }
   }
@@ -153,17 +167,19 @@ html{
   font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   color:#6221d2; 
-  /* background-color: rgb(205, 255, 255); */
-  height: 100%;
-  width: 100%;  
 } 
+
+.status {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  text-transform: uppercase;
+}
 
 .game-board{
   display: grid; 
-  grid-template-columns: 100px 100px 100px 100px; 
-  grid-template-rows: 100px 100px 100px 100px;
-  grid-column-gap: 30px; 
-  grid-row-gap: 30px; 
+  grid-template-columns: repeat(4, 160px); 
+  grid-template-rows: repeat(4, 160px);
+  gap: 20px;
   justify-content: center;
 }
 
@@ -171,4 +187,19 @@ html{
    transition: transform 0.8s ease-in; 
 }
 
+#restartBtn{
+  color:rgb(255, 255, 255);
+  border-radius: 5px;
+  border-color:#6221d2; 
+  background-color: #b082fe;
+  font-size: 20px; 
+  padding: 8px; 
+  transition-duration: 0.4s;
+}
+
+#restartBtn:hover{
+  color: white; 
+  background-color: #6221d2;
+  cursor:pointer; 
+}
 </style>

@@ -12,7 +12,7 @@ export default {
         required: true
     },
     value: {
-        type: Number, 
+        type: String, 
         required: true
     },
     visible: {
@@ -44,19 +44,24 @@ export default {
 
 <template>
    <div class="card" :class="flippedStyles" @click="selectCard">
-    <div v-if="visible" class="card-face is-front">
-        {{ value }} - {{ position }} - {{ matched }}
+
+    <div class="card-face is-front">
+        <!-- {{ value }} - {{ position }} - {{ matched }} -->
+        <img :src="`/designs/${value}.jpg`" class="pictures" :alt="value">
     </div>
-    <div class="card-face is-back">Back</div>
+
+    <div class="card-face is-back"></div>
+
     </div>
 </template>
 
 <style>
 .card{
-  border: 5px solid #ccc;
   position: relative; 
   transition: 0.5s transform ease-in; 
-  transform-style: preserve-3d; 
+  transform-style: preserve-3d;
+  /* width: 100px; 
+  height: 100px;  */
 }
 
 .card.is-flipped {
@@ -68,20 +73,32 @@ export default {
    height: 100%; 
    position: absolute; 
    border-radius: 10px;
-   display: flex;
-   align-items: center;
-   justify-content: center;
+   /* display: flex; */
+   /* align-items: center;
+   justify-content: center; */
    backface-visibility: hidden;
 }
 
 .card-face.is-front {
-   background-color: red;
-   color: white; 
+   /* background-image: url('/public/designs/back.jpg'); */
+   /* color: white;  */
    transform: rotateY(180deg);
 }
 
 .card-face.is-back {
-    background-color: blue;
-    color: white;  
+    background-image: url('/public/designs/back.jpg');
+    color: white;
+    background-size: cover;  
 }
+
+.card-image {
+    width: inherit;
+    height: inherit; 
+}
+
+.pictures {
+    width: inherit;
+    height: inherit; 
+    border-radius: inherit;
+} 
 </style>
